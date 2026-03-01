@@ -112,16 +112,48 @@ if (!app.requestSingleInstanceLock()) {
         });
     });
 
-    // First-run setup: ensure userDir exists and seed default WebOS flows
+    // First-run setup: ensure userDir exists and seed/merge default WebOS flows
     if (!fs.existsSync(settings.userDir)) {
         fs.mkdirSync(settings.userDir, { recursive: true });
     }
     var flowsFile = path.join(settings.userDir, settings.flowFile);
+    var defaultFlowsPath = path.join(__dirname, 'default-flows.json');
     if (!fs.existsSync(flowsFile)) {
-        var defaultFlows = path.join(__dirname, 'default-flows.json');
-        if (fs.existsSync(defaultFlows)) {
-            fs.copyFileSync(defaultFlows, flowsFile);
+        // Brand-new install — copy the whole file
+        if (fs.existsSync(defaultFlowsPath)) {
+            fs.copyFileSync(defaultFlowsPath, flowsFile);
             console.log('Default WebOS System Services flows installed');
+        }
+    } else if (fs.existsSync(defaultFlowsPath)) {
+        // Existing install — merge any missing/updated default nodes into user flows
+        try {
+            var existingFlows = JSON.parse(fs.readFileSync(flowsFile, 'utf8'));
+            var defaultFlows = JSON.parse(fs.readFileSync(defaultFlowsPath, 'utf8'));
+            var existingById = {};
+            existingFlows.forEach(function (node) { existingById[node.id] = node; });
+            var added = 0;
+            var updated = 0;
+            defaultFlows.forEach(function (defaultNode) {
+                if (!existingById[defaultNode.id]) {
+                    existingFlows.push(defaultNode);
+                    added++;
+                } else if (JSON.stringify(existingById[defaultNode.id]) !== JSON.stringify(defaultNode)) {
+                    // Replace the existing node with the updated default
+                    for (var i = 0; i < existingFlows.length; i++) {
+                        if (existingFlows[i].id === defaultNode.id) {
+                            existingFlows[i] = defaultNode;
+                            break;
+                        }
+                    }
+                    updated++;
+                }
+            });
+            if (added > 0 || updated > 0) {
+                fs.writeFileSync(flowsFile, JSON.stringify(existingFlows, null, 4));
+                console.log('WebOS System Services flows synced (' + added + ' added, ' + updated + ' updated)');
+            }
+        } catch (err) {
+            console.error('Failed to merge default flows:', err.message);
         }
     }
 
