@@ -11,7 +11,7 @@
         "type": "comment",
         "z": "webos-services-tab",
         "name": "WebOS Local Edge Node - Headless Browser Services",
-        "info": "These endpoints provide RPC-style access to a warm Chromium instance.\nThe WebOS (running in the user's browser) makes fetch() calls to these\nlocalhost endpoints to perform tasks that require a full browser engine.\n\nEndpoints:\n- POST /os/screenshot - Capture a screenshot of a URL or HTML\n- POST /os/scrape - Extract text content from a JavaScript-rendered page\n- POST /os/pdf - Generate a PDF from HTML content",
+        "info": "These endpoints provide RPC-style access to a warm Chromium instance.\nThe WebOS (running in the user's browser) makes fetch() calls to these\nlocalhost endpoints to perform tasks that require a full browser engine.\n\nEndpoints:\n- POST /os/screenshot - Capture a screenshot of a URL or HTML\n- POST /os/scrape - Extract text content from a JavaScript-rendered page\n- POST /os/pdf - Generate a PDF from HTML content\n- GET /os/proxy?url=... - Reverse proxy that strips X-Frame-Options/CSP for iframe embedding",
         "x": 310,
         "y": 40,
         "wires": []
@@ -28,7 +28,9 @@
         "x": 150,
         "y": 120,
         "wires": [
-            ["screenshot-func"]
+            [
+                "screenshot-func"
+            ]
         ]
     },
     {
@@ -46,7 +48,9 @@
         "x": 380,
         "y": 120,
         "wires": [
-            ["screenshot-out"]
+            [
+                "screenshot-out"
+            ]
         ]
     },
     {
@@ -72,7 +76,9 @@
         "x": 140,
         "y": 240,
         "wires": [
-            ["scrape-func"]
+            [
+                "scrape-func"
+            ]
         ]
     },
     {
@@ -90,7 +96,9 @@
         "x": 380,
         "y": 240,
         "wires": [
-            ["scrape-out"]
+            [
+                "scrape-out"
+            ]
         ]
     },
     {
@@ -116,7 +124,9 @@
         "x": 130,
         "y": 360,
         "wires": [
-            ["pdf-func"]
+            [
+                "pdf-func"
+            ]
         ]
     },
     {
@@ -134,7 +144,9 @@
         "x": 370,
         "y": 360,
         "wires": [
-            ["pdf-out"]
+            [
+                "pdf-out"
+            ]
         ]
     },
     {
@@ -146,6 +158,63 @@
         "headers": {},
         "x": 570,
         "y": 360,
+        "wires": []
+    },
+    {
+        "id": "proxy-in",
+        "type": "http in",
+        "z": "webos-services-tab",
+        "name": "GET /os/proxy",
+        "url": "/os/proxy",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 480,
+        "wires": [
+            [
+                "proxy-func"
+            ]
+        ]
+    },
+    {
+        "id": "proxy-func",
+        "type": "function",
+        "z": "webos-services-tab",
+        "name": "Iframe Reverse Proxy",
+        "func": "const targetUrl = msg.req.query.url;\n\nif (!targetUrl) {\n    msg.payload = \"Missing URL parameter\";\n    msg.statusCode = 400;\n    return msg;\n}\n\nlet parsed;\ntry {\n    parsed = new URL(targetUrl);\n} catch (e) {\n    msg.payload = \"Invalid URL\";\n    msg.statusCode = 400;\n    return msg;\n}\n\nconst client = parsed.protocol === \"https:\" ? https : http;\n\nreturn new Promise((resolve) => {\n    const options = {\n        hostname: parsed.hostname,\n        port: parsed.port || (parsed.protocol === \"https:\" ? 443 : 80),\n        path: parsed.pathname + parsed.search,\n        method: \"GET\",\n        headers: {\n            \"User-Agent\": msg.req.headers[\"user-agent\"] || \"AgentOS-Proxy\"\n        }\n    };\n\n    const proxyReq = client.request(options, (response) => {\n        const chunks = [];\n\n        msg.headers = Object.assign({}, response.headers);\n        delete msg.headers[\"x-frame-options\"];\n        delete msg.headers[\"content-security-policy\"];\n\n        msg.statusCode = response.statusCode;\n\n        response.on(\"data\", (chunk) => {\n            chunks.push(chunk);\n        });\n\n        response.on(\"end\", () => {\n            msg.payload = Buffer.concat(chunks);\n            resolve(msg);\n        });\n    });\n\n    proxyReq.on(\"error\", (err) => {\n        msg.payload = \"Proxy error: \" + err.message;\n        msg.statusCode = 500;\n        resolve(msg);\n    });\n\n    proxyReq.end();\n});",
+        "outputs": 1,
+        "timeout": 60,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "http",
+                "module": "http"
+            },
+            {
+                "var": "https",
+                "module": "https"
+            }
+        ],
+        "x": 380,
+        "y": 480,
+        "wires": [
+            [
+                "proxy-out"
+            ]
+        ]
+    },
+    {
+        "id": "proxy-out",
+        "type": "http response",
+        "z": "webos-services-tab",
+        "name": "Response",
+        "statusCode": "",
+        "headers": {},
+        "x": 570,
+        "y": 480,
         "wires": []
     }
 ]
