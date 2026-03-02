@@ -11,7 +11,7 @@
         "type": "comment",
         "z": "webos-services-tab",
         "name": "WebOS Local Edge Node - Headless Browser Services",
-        "info": "These endpoints provide RPC-style access to a warm Chromium instance.\nThe WebOS (running in the user's browser) makes fetch() calls to these\nlocalhost endpoints to perform tasks that require a full browser engine.\n\nEndpoints:\n- POST /os/screenshot - Capture a screenshot of a URL or HTML\n- POST /os/scrape - Extract text content from a JavaScript-rendered page\n- POST /os/pdf - Generate a PDF from HTML content\n- GET /os/proxy?url=... - Reverse proxy that strips X-Frame-Options/CSP for iframe embedding",
+        "info": "These endpoints provide RPC-style access to a warm Chromium instance.\nThe WebOS (running in the user's browser) makes fetch() calls to these\nlocalhost endpoints to perform tasks that require a full browser engine.\n\nEndpoints:\n- POST /os/screenshot - Capture a screenshot of a URL or HTML\n- POST /os/scrape - Extract text content from a JavaScript-rendered page\n- POST /os/pdf - Generate a PDF from HTML content\n- GET /os/proxy?url=... - Reverse proxy that strips X-Frame-Options/CSP for iframe embedding\n- POST /os/browser/action - Stateful remote browser control (goto, click, type, screenshot)",
         "x": 310,
         "y": 40,
         "wires": []
@@ -215,6 +215,77 @@
         "headers": {},
         "x": 570,
         "y": 480,
+        "wires": []
+    },
+    {
+        "id": "browser-action-comment",
+        "type": "comment",
+        "z": "webos-services-tab",
+        "name": "Remote Browser Control — Stateful Puppeteer API",
+        "info": "Persistent browser session with saved cookies via userDataDir.\nPOST /os/browser/action with { action, url?, selector?, text? }\nActions: goto, click, type, screenshot\nAlways returns a base64 screenshot + DOM text.",
+        "x": 310,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "browser-action-in",
+        "type": "http in",
+        "z": "webos-services-tab",
+        "name": "POST /os/browser/action",
+        "url": "/os/browser/action",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 620,
+        "wires": [
+            [
+                "browser-action-func"
+            ]
+        ]
+    },
+    {
+        "id": "browser-action-func",
+        "type": "function",
+        "z": "webos-services-tab",
+        "name": "Remote Browser Control",
+        "func": "const action = msg.payload.action;\nif (!action) {\n    msg.payload = { success: false, error: \"Missing action field. Use: goto, click, type, screenshot\" };\n    msg.statusCode = 400;\n    return msg;\n}\n\ntry {\n    let browser = global.get(\"activeBrowser\");\n    let page = global.get(\"activePage\");\n\n    if (!browser || !browser.isConnected()) {\n        const userDataDir = path.join(os.homedir(), \".node-red-standalone\", \"chrome-profile-data\");\n        browser = await puppeteer.launch({\n            headless: true,\n            userDataDir: userDataDir,\n            args: [\"--no-sandbox\", \"--disable-setuid-sandbox\"]\n        });\n        page = await browser.newPage();\n        await page.setViewport({ width: 1280, height: 800 });\n        global.set(\"activeBrowser\", browser);\n        global.set(\"activePage\", page);\n    }\n\n    if (!page || page.isClosed()) {\n        page = await browser.newPage();\n        await page.setViewport({ width: 1280, height: 800 });\n        global.set(\"activePage\", page);\n    }\n\n    if (action === \"goto\") {\n        if (!msg.payload.url) {\n            msg.payload = { success: false, error: \"Missing url for goto action\" };\n            msg.statusCode = 400;\n            return msg;\n        }\n        await page.goto(msg.payload.url, { waitUntil: \"networkidle2\" });\n    } else if (action === \"click\") {\n        if (!msg.payload.selector) {\n            msg.payload = { success: false, error: \"Missing selector for click action\" };\n            msg.statusCode = 400;\n            return msg;\n        }\n        await page.click(msg.payload.selector);\n    } else if (action === \"type\") {\n        if (!msg.payload.selector || !msg.payload.text) {\n            msg.payload = { success: false, error: \"Missing selector or text for type action\" };\n            msg.statusCode = 400;\n            return msg;\n        }\n        await page.type(msg.payload.selector, msg.payload.text);\n    } else if (action === \"screenshot\") {\n        // Just take the screenshot below\n    } else {\n        msg.payload = { success: false, error: \"Unknown action: \" + action + \". Use: goto, click, type, screenshot\" };\n        msg.statusCode = 400;\n        return msg;\n    }\n\n    const screenshot = await page.screenshot({ encoding: \"base64\" });\n    const dom = await page.evaluate(() => document.body.innerText.substring(0, 5000));\n\n    msg.payload = { success: true, screenshot: screenshot, dom: dom };\n    return msg;\n} catch (err) {\n    msg.payload = { success: false, error: err.message };\n    msg.statusCode = 500;\n    return msg;\n}",
+        "outputs": 1,
+        "timeout": 60,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "puppeteer",
+                "module": "puppeteer"
+            },
+            {
+                "var": "path",
+                "module": "path"
+            },
+            {
+                "var": "os",
+                "module": "os"
+            }
+        ],
+        "x": 420,
+        "y": 620,
+        "wires": [
+            [
+                "browser-action-out"
+            ]
+        ]
+    },
+    {
+        "id": "browser-action-out",
+        "type": "http response",
+        "z": "webos-services-tab",
+        "name": "Response",
+        "statusCode": "",
+        "headers": {},
+        "x": 630,
+        "y": 620,
         "wires": []
     }
 ]
