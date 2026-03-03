@@ -1,0 +1,573 @@
+/*
+ * AgentOS Neomorphic Dark Theme — overlay for midnight-red base
+ *
+ * This file is loaded AFTER the midnight-red theme via editorTheme.page.css.
+ * It overrides CSS variables and adds neomorphic shadow effects to give the
+ * Node-RED editor a modern, branded "AgentOS" look.
+ *
+ * Upgrade-safe: lives outside node_modules, referenced by main.js config.
+ */
+
+/* =========================================================================
+   1. COLOR PALETTE — override midnight-red's dark gray with blue-gray
+   ========================================================================= */
+
+:root {
+    /* Backgrounds */
+    --red-ui-primary-background: #1e1e2e;
+    --red-ui-secondary-background: #262638;
+    --red-ui-secondary-background-selected: #2e2e44;
+    --red-ui-secondary-background-inactive: #232336;
+    --red-ui-secondary-background-hover: #2a2a40;
+    --red-ui-secondary-background-disabled: #252538;
+    --red-ui-tertiary-background: #282840;
+
+    /* Borders */
+    --red-ui-primary-border-color: #1a1a2a;
+    --red-ui-secondary-border-color: #1c1c2e;
+    --red-ui-tertiary-border-color: #1e1e30;
+
+    /* Shadows */
+    --red-ui-shadow: rgba(0, 0, 0, 0.4);
+
+    /* Accent — AgentOS purple */
+    --red-ui-deploy-button-background: #6B5CE7;
+    --red-ui-deploy-button-background-hover: #7d6ff0;
+    --red-ui-deploy-button-background-active: #5a4bd6;
+    --red-ui-deploy-button-background-disabled: #3a3a52;
+    --red-ui-deploy-button-background-disabled-hover: #444460;
+    --red-ui-deploy-button-color: #fff;
+    --red-ui-deploy-button-color-active: #e0e0e0;
+
+    /* Primary action buttons use purple */
+    --red-ui-workspace-button-background-primary: #6B5CE7;
+    --red-ui-workspace-button-background-primary-hover: #5a4bd6;
+
+    /* Header */
+    --red-ui-header-background: #161624;
+    --red-ui-header-menu-background: #1a1a2c;
+    --red-ui-header-menu-color: #e0e0e0;
+    --red-ui-header-text-color: #e0e0e0;
+
+    /* Tabs */
+    --red-ui-tab-background: #262638;
+    --red-ui-tab-background-active: #282840;
+    --red-ui-tab-background-selected: #2e2e44;
+    --red-ui-tab-background-inactive: #232336;
+    --red-ui-tab-background-hover: #2a2a40;
+
+    /* Palette */
+    --red-ui-palette-header-background: #1e1e2e;
+    --red-ui-palette-content-background: #262638;
+
+    /* Form elements */
+    --red-ui-form-background: #262638;
+    --red-ui-form-input-background: #1e1e2e;
+    --red-ui-form-input-background-disabled: #252538;
+    --red-ui-form-input-border-color: #333350;
+    --red-ui-form-input-focus-color: rgba(107, 92, 231, 0.7);
+    --red-ui-form-button-background: #2a2a40;
+    --red-ui-form-tips-background: #1e1e2e;
+
+    /* Text colors */
+    --red-ui-primary-text-color: #e0e0e0;
+    --red-ui-secondary-text-color: #a0a0b8;
+    --red-ui-tertiary-text-color: #7878a0;
+    --red-ui-text-color-link: #9a8cf0;
+
+    /* Code editor */
+    --red-ui-text-editor-background: #141422;
+    --red-ui-text-editor-gutter-background: #18182a;
+    --red-ui-text-editor-gutter-active-line-background: #1e1e34;
+    --red-ui-text-editor-active-line-background: #1e1e34;
+    --red-ui-text-editor-selection-background: #3a3a5c;
+
+    /* Lists */
+    --red-ui-list-item-background: #262638;
+    --red-ui-list-item-background-hover: #2a2a40;
+    --red-ui-list-item-background-selected: #2e2e44;
+
+    /* Popover / tooltips */
+    --red-ui-popover-background: #1e1e2e;
+    --red-ui-popover-border: #333350;
+    --red-ui-popover-color: #e0e0e0;
+
+    /* Event log */
+    --red-ui-event-log-background: #1a1a2c;
+    --red-ui-event-log-active-line-background: #1e1e2e;
+    --red-ui-event-log-selection-background: #2e2e44;
+
+    /* Workspace buttons */
+    --red-ui-workspace-button-background: #262638;
+    --red-ui-workspace-button-background-hover: #2a2a40;
+    --red-ui-workspace-button-background-active: #2e2e44;
+}
+
+/* =========================================================================
+   2. NEOMORPHIC HEADER
+   ========================================================================= */
+
+#red-ui-header {
+    background: linear-gradient(180deg, #1c1c30 0%, #161624 100%) !important;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        0 1px 0 rgba(107, 92, 231, 0.15) inset !important;
+    border-bottom: 1px solid rgba(107, 92, 231, 0.2) !important;
+}
+
+/* Header title text glow */
+#red-ui-header .red-ui-header-logo .red-ui-logo-text,
+.red-ui-header-logo span {
+    text-shadow: 0 0 20px rgba(107, 92, 231, 0.3);
+}
+
+/* =========================================================================
+   3. NEOMORPHIC DEPLOY BUTTON
+   ========================================================================= */
+
+#red-ui-header-button-deploy {
+    background: linear-gradient(135deg, #7d6ff0 0%, #6B5CE7 50%, #5a4bd6 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow:
+        3px 3px 8px rgba(0, 0, 0, 0.4),
+        -2px -2px 6px rgba(107, 92, 231, 0.15),
+        0 0 12px rgba(107, 92, 231, 0.2) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.2s ease !important;
+    padding: 4px 18px !important;
+}
+
+#red-ui-header-button-deploy:hover {
+    background: linear-gradient(135deg, #8a7ef5 0%, #7d6ff0 50%, #6B5CE7 100%) !important;
+    box-shadow:
+        2px 2px 6px rgba(0, 0, 0, 0.4),
+        -1px -1px 4px rgba(107, 92, 231, 0.2),
+        0 0 18px rgba(107, 92, 231, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+#red-ui-header-button-deploy:active {
+    transform: translateY(1px);
+    box-shadow:
+        inset 2px 2px 4px rgba(0, 0, 0, 0.3),
+        0 0 8px rgba(107, 92, 231, 0.15) !important;
+}
+
+/* =========================================================================
+   4. NEOMORPHIC SIDEBAR
+   ========================================================================= */
+
+#red-ui-sidebar {
+    background: #1e1e2e !important;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3) inset !important;
+}
+
+.red-ui-sidebar-header {
+    background: #1a1a2c !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Sidebar tab bar */
+#red-ui-sidebar .red-ui-tabs {
+    background: #1a1a2c !important;
+}
+
+#red-ui-sidebar ul.red-ui-tabs li {
+    border-radius: 6px 6px 0 0 !important;
+}
+
+#red-ui-sidebar ul.red-ui-tabs li.active {
+    background: #262638 !important;
+    box-shadow: 0 -2px 6px rgba(107, 92, 231, 0.1) !important;
+}
+
+/* Info / Help / Debug panels */
+.red-ui-sidebar-node-config,
+.red-ui-sidebar-context,
+.red-ui-sidebar-info {
+    background: #1e1e2e !important;
+}
+
+/* =========================================================================
+   5. NEOMORPHIC PALETTE (left panel)
+   ========================================================================= */
+
+#red-ui-palette {
+    background: #1e1e2e !important;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3) inset !important;
+}
+
+/* Palette category headers — neomorphic raised pill */
+.red-ui-palette-header {
+    background: #232336 !important;
+    border-radius: 6px !important;
+    margin: 3px 6px !important;
+    box-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.35),
+        -2px -2px 5px rgba(255, 255, 255, 0.03) !important;
+    border: none !important;
+    transition: all 0.15s ease !important;
+}
+
+.red-ui-palette-header:hover {
+    background: #282840 !important;
+    box-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.4),
+        -2px -2px 5px rgba(255, 255, 255, 0.04),
+        0 0 6px rgba(107, 92, 231, 0.08) !important;
+}
+
+/* Palette nodes — subtle raised look */
+.red-ui-palette-node {
+    border-radius: 6px !important;
+    box-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.3),
+        -1px -1px 3px rgba(255, 255, 255, 0.02) !important;
+    margin: 2px 4px !important;
+    transition: all 0.15s ease !important;
+}
+
+.red-ui-palette-node:hover {
+    box-shadow:
+        3px 3px 6px rgba(0, 0, 0, 0.35),
+        -2px -2px 4px rgba(255, 255, 255, 0.03),
+        0 0 8px rgba(107, 92, 231, 0.12) !important;
+    transform: translateY(-1px);
+}
+
+/* Palette search input — inset well */
+#red-ui-palette-search input {
+    background: #141422 !important;
+    border: 1px solid #333350 !important;
+    border-radius: 8px !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.02) !important;
+    color: #e0e0e0 !important;
+    padding: 6px 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+#red-ui-palette-search input:focus {
+    border-color: rgba(107, 92, 231, 0.5) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.02),
+                0 0 8px rgba(107, 92, 231, 0.2) !important;
+}
+
+/* =========================================================================
+   6. NEOMORPHIC WORKSPACE (canvas area)
+   ========================================================================= */
+
+#red-ui-workspace {
+    background: #1e1e2e !important;
+}
+
+/* Workspace chart / canvas */
+#red-ui-workspace-chart {
+    background: #1a1a2c !important;
+}
+
+/* Flow tab bar */
+#red-ui-workspace .red-ui-tabs {
+    background: #1e1e2e !important;
+}
+
+#red-ui-workspace ul.red-ui-tabs li {
+    border-radius: 6px 6px 0 0 !important;
+    transition: all 0.15s ease !important;
+}
+
+#red-ui-workspace ul.red-ui-tabs li.active,
+#red-ui-workspace ul.red-ui-tabs li.red-ui-tab-selected {
+    box-shadow: 0 -2px 6px rgba(107, 92, 231, 0.15) !important;
+    border-top: 2px solid #6B5CE7 !important;
+}
+
+/* =========================================================================
+   7. NEOMORPHIC FLOW NODES (on canvas)
+   ========================================================================= */
+
+/* Node body rectangles — soft raised appearance */
+.red-ui-flow-node-group rect.red-ui-flow-node,
+.red-ui-flow-node rect {
+    rx: 8 !important;
+    ry: 8 !important;
+    filter: drop-shadow(2px 3px 6px rgba(0, 0, 0, 0.4)) !important;
+}
+
+/* Selected node — purple glow */
+.red-ui-flow-node-selected rect,
+g.red-ui-flow-node-group.red-ui-flow-node-selected rect {
+    filter: drop-shadow(0 0 8px rgba(107, 92, 231, 0.5)) !important;
+    stroke: #6B5CE7 !important;
+    stroke-width: 2 !important;
+}
+
+/* Node status dot */
+.red-ui-flow-node-status-dot {
+    filter: drop-shadow(0 0 3px rgba(107, 92, 231, 0.3)) !important;
+}
+
+/* Wires */
+.red-ui-flow-link-line {
+    stroke-width: 2 !important;
+}
+
+/* =========================================================================
+   8. NEOMORPHIC TRAY (node edit panel)
+   ========================================================================= */
+
+.red-ui-tray {
+    background: #1e1e2e !important;
+    box-shadow: -6px 0 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+.red-ui-tray-header {
+    background: #1a1a2c !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    border-bottom: 1px solid rgba(107, 92, 231, 0.15) !important;
+}
+
+.red-ui-tray-footer {
+    background: #1a1a2c !important;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Tray footer buttons */
+.red-ui-tray-footer button.red-ui-button {
+    border-radius: 6px !important;
+    transition: all 0.15s ease !important;
+}
+
+.red-ui-tray-footer button.primary {
+    background: #6B5CE7 !important;
+    border-color: #5a4bd6 !important;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3),
+                -1px -1px 4px rgba(107, 92, 231, 0.1) !important;
+}
+
+.red-ui-tray-footer button.primary:hover {
+    background: #7d6ff0 !important;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3),
+                0 0 10px rgba(107, 92, 231, 0.2) !important;
+}
+
+/* =========================================================================
+   9. NEOMORPHIC FORM INPUTS
+   ========================================================================= */
+
+.red-ui-tray input[type="text"],
+.red-ui-tray input[type="password"],
+.red-ui-tray input[type="number"],
+.red-ui-tray textarea,
+.red-ui-tray select,
+.red-ui-editor input[type="text"],
+.red-ui-editor textarea,
+.red-ui-editor select {
+    background: #141422 !important;
+    border: 1px solid #333350 !important;
+    border-radius: 6px !important;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.35),
+                inset -2px -2px 4px rgba(255, 255, 255, 0.02) !important;
+    color: #e0e0e0 !important;
+    transition: all 0.2s ease !important;
+}
+
+.red-ui-tray input[type="text"]:focus,
+.red-ui-tray input[type="password"]:focus,
+.red-ui-tray textarea:focus,
+.red-ui-tray select:focus,
+.red-ui-editor input[type="text"]:focus,
+.red-ui-editor textarea:focus,
+.red-ui-editor select:focus {
+    border-color: rgba(107, 92, 231, 0.5) !important;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.35),
+                inset -2px -2px 4px rgba(255, 255, 255, 0.02),
+                0 0 6px rgba(107, 92, 231, 0.2) !important;
+    outline: none !important;
+}
+
+/* =========================================================================
+   10. NEOMORPHIC DIALOGS & NOTIFICATIONS
+   ========================================================================= */
+
+.red-ui-editor-dialog {
+    background: #1e1e2e !important;
+    border: 1px solid #333350 !important;
+    border-radius: 12px !important;
+    box-shadow:
+        8px 8px 24px rgba(0, 0, 0, 0.5),
+        -4px -4px 12px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Notification popup */
+.red-ui-notification {
+    background: #262638 !important;
+    border-left: 4px solid #6B5CE7 !important;
+    border-radius: 8px !important;
+    box-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.4),
+        -2px -2px 8px rgba(255, 255, 255, 0.02) !important;
+}
+
+/* =========================================================================
+   11. NEOMORPHIC HEADER MENU DROPDOWN
+   ========================================================================= */
+
+#red-ui-header-shade,
+.red-ui-menu-dropdown {
+    background: #1a1a2c !important;
+    border: 1px solid #333350 !important;
+    border-radius: 8px !important;
+    box-shadow:
+        6px 6px 16px rgba(0, 0, 0, 0.5),
+        -3px -3px 8px rgba(255, 255, 255, 0.02) !important;
+    overflow: hidden !important;
+}
+
+.red-ui-menu-dropdown li a:hover {
+    background: #2a2a40 !important;
+}
+
+.red-ui-menu-dropdown li.active > a {
+    color: #6B5CE7 !important;
+}
+
+/* =========================================================================
+   12. SCROLLBARS — thin & themed
+   ========================================================================= */
+
+::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #141422 !important;
+    border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3a3a56 !important;
+    border-radius: 4px !important;
+    border: 1px solid #141422 !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4a4a6a !important;
+}
+
+::-webkit-scrollbar-corner {
+    background: #141422 !important;
+}
+
+/* =========================================================================
+   13. HEADER MENU BUTTONS — neomorphic subtle raised
+   ========================================================================= */
+
+#red-ui-header .button {
+    border-radius: 6px !important;
+    transition: all 0.15s ease !important;
+}
+
+#red-ui-header .button:hover {
+    background: rgba(107, 92, 231, 0.12) !important;
+    box-shadow: 0 0 8px rgba(107, 92, 231, 0.1) !important;
+}
+
+#red-ui-header .button.active,
+#red-ui-header .button.selected {
+    background: rgba(107, 92, 231, 0.18) !important;
+}
+
+/* =========================================================================
+   14. GENERAL BUTTONS — purple accent for primary actions
+   ========================================================================= */
+
+button.red-ui-button.primary,
+.red-ui-editableList-addButton button {
+    background: #6B5CE7 !important;
+    border-color: #5a4bd6 !important;
+    border-radius: 6px !important;
+    color: #fff !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3),
+                -1px -1px 3px rgba(107, 92, 231, 0.08) !important;
+    transition: all 0.15s ease !important;
+}
+
+button.red-ui-button.primary:hover,
+.red-ui-editableList-addButton button:hover {
+    background: #7d6ff0 !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3),
+                0 0 10px rgba(107, 92, 231, 0.15) !important;
+}
+
+/* Secondary buttons */
+button.red-ui-button {
+    border-radius: 6px !important;
+    transition: all 0.15s ease !important;
+}
+
+/* =========================================================================
+   15. SUBTLE TRANSITIONS & MICRO-ANIMATIONS
+   ========================================================================= */
+
+.red-ui-palette-node,
+.red-ui-sidebar-header,
+.red-ui-tray,
+#red-ui-header .button,
+button.red-ui-button {
+    transition: all 0.15s ease !important;
+}
+
+/* Purple focus ring for accessibility */
+*:focus-visible {
+    outline: 2px solid rgba(107, 92, 231, 0.6) !important;
+    outline-offset: 2px !important;
+}
+
+/* =========================================================================
+   16. SEARCH DIALOG
+   ========================================================================= */
+
+.red-ui-search-container {
+    background: #1e1e2e !important;
+    border: 1px solid #333350 !important;
+    border-radius: 12px !important;
+    box-shadow:
+        8px 8px 24px rgba(0, 0, 0, 0.5),
+        -4px -4px 12px rgba(255, 255, 255, 0.03) !important;
+    overflow: hidden !important;
+}
+
+.red-ui-search-container input {
+    background: #141422 !important;
+    border-radius: 8px !important;
+}
+
+/* =========================================================================
+   17. TYPE SEARCH (quick-add nodes)
+   ========================================================================= */
+
+.red-ui-type-search {
+    background: #1e1e2e !important;
+    border-radius: 10px !important;
+    box-shadow:
+        6px 6px 18px rgba(0, 0, 0, 0.5),
+        -3px -3px 10px rgba(255, 255, 255, 0.02) !important;
+}
+
+.red-ui-type-search-input {
+    background: #141422 !important;
+    border-radius: 8px !important;
+}
+
+/* =========================================================================
+   18. WORKSPACE FOOTER (debug, info status bar)
+   ========================================================================= */
+
+#red-ui-workspace-footer {
+    background: #161624 !important;
+    border-top: 1px solid rgba(107, 92, 231, 0.1) !important;
+}
