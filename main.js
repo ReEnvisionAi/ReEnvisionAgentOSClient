@@ -50,9 +50,11 @@ var settings = {
 
     editorTheme: {
         projects: { enabled: true },
+        theme: 'midnight-red',
         page: {
             title: 'AgentOS',
             favicon: path.join(unpackedDir, 'build', 'icon.png'),
+            css: [path.join(unpackedDir, 'theme', 'agentos.css')],
             tabicon: {
                 icon: path.join(unpackedDir, 'build', 'icon.png'),
                 colour: '#6B5CE7'
@@ -61,7 +63,12 @@ var settings = {
         header: {
             title: 'AgentOS',
             image: path.join(unpackedDir, 'build', 'icon.png')
-        }
+        },
+        deployButton: {
+            type: 'simple',
+            label: 'Deploy'
+        },
+        tours: false
     }
 };
 

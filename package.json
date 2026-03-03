@@ -11,7 +11,9 @@
     "asar": true,
     "asarUnpack": [
       "build/**",
-      "node_modules/@node-red/**"
+      "theme/**",
+      "node_modules/@node-red/**",
+      "node_modules/@node-red-contrib-themes/**"
     ],
     "files": [
       "**/*",
@@ -20,8 +22,16 @@
         "to": "node_modules/@node-red"
       },
       {
+        "from": "node_modules/@node-red-contrib-themes",
+        "to": "node_modules/@node-red-contrib-themes"
+      },
+      {
         "from": "build",
         "to": "build"
+      },
+      {
+        "from": "theme",
+        "to": "theme"
       }
     ],
     "win": {
@@ -61,6 +71,7 @@
     "build": "node scripts/rebrand.js && electron-builder"
   },
   "dependencies": {
+    "@node-red-contrib-themes/theme-collection": "^4.1.1",
     "electron-log": "5.4.3",
     "node-red": "4.1.5"
   },
